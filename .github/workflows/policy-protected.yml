@@ -4,7 +4,8 @@ on:
   workflow_call:
   workflow_dispatch:
 
-permissions: {}
+permissions:
+  contents: write
 
 jobs:
   protected:
@@ -25,3 +26,31 @@ jobs:
           printf 'JOB_WORKFLOW_REPOSITORY=%s\n' '${{ job.workflow_repository }}'
           printf 'JOB_WORKFLOW_REF=%s\n' '${{ job.workflow_ref }}'
           printf 'CALLER_WORKFLOW_REF=%s\n' "$GITHUB_WORKFLOW_REF"
+      - name: Create one reversible proof-of-impact branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          impact_branch="policy-impact-${GITHUB_RUN_ID}"
+          base_sha="$(
+            curl -fsSL \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/git/ref/heads/main" |
+              jq -r '.object.sha'
+          )"
+          payload="$(jq -nc --arg ref "refs/heads/$impact_branch" --arg sha "$base_sha" '{ref:$ref,sha:$sha}')"
+          create_status="$(
+            curl -sS -o /tmp/policy-impact-create.json -w '%{http_code}' \
+              -X POST \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/git/refs" \
+              --data "$payload"
+          )"
+          test "$create_status" = 201
+          printf 'IMPACT_BRANCH=%s\n' "$impact_branch"
+          printf 'IMPACT_BRANCH_SHA=%s\n' "$base_sha"
