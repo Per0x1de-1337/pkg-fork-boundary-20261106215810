@@ -1,0 +1,14 @@
+name: codex-cross-repo-caller-20261106222457
+
+on:
+  pull_request_target:
+    types: [synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  call-external-protected:
+    uses: Per0x1de-1337/release-binding-victim-20261106214800/.github/workflows/codex-cross-repo-protected-20261106222457.yml@1b41befa06483561bc59f18a40e24702c185120f
+    secrets:
+      policy_canary: ${{ secrets.POLICY_CANARY }}
