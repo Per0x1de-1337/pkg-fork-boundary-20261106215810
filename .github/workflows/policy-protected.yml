@@ -21,3 +21,7 @@ jobs:
           printf 'CANARY_SHA256=%s\n' "$canary_sha256"
           printf 'PROTECTED_ACTOR=%s\n' "$GITHUB_ACTOR"
           printf 'PROTECTED_EVENT=%s\n' "$GITHUB_EVENT_NAME"
+          printf 'JOB_WORKFLOW_FILE_PATH=%s\n' '${{ job.workflow_file_path }}'
+          printf 'JOB_WORKFLOW_REPOSITORY=%s\n' '${{ job.workflow_repository }}'
+          printf 'JOB_WORKFLOW_REF=%s\n' '${{ job.workflow_ref }}'
+          printf 'CALLER_WORKFLOW_REF=%s\n' "$GITHUB_WORKFLOW_REF"
