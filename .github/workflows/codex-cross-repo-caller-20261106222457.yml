@@ -6,9 +6,10 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   call-external-protected:
-    uses: Per0x1de-1337/release-binding-victim-20261106214800/.github/workflows/codex-cross-repo-protected-20261106222457.yml@1b41befa06483561bc59f18a40e24702c185120f
+    uses: Per0x1de-1337/release-binding-victim-20261106214800/.github/workflows/codex-cross-repo-protected-20261106222457.yml@b8c0bfeac21b313ec1535a0b276cc30a9eb99f29
     secrets:
       policy_canary: ${{ secrets.POLICY_CANARY }}
