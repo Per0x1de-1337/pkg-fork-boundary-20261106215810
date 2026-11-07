@@ -1,0 +1,18 @@
+name: Policy protected reusable RP caller
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  call-protected:
+    if: github.event.pull_request.head.repo.fork == true
+    uses: Per0x1de-1337/release-binding-victim-20261106214800/.github/workflows/policy-rp-protected.yml@main
+    with:
+      rp_public_key_b64: ${{ vars.POLICY_RP_PUBLIC_KEY_B64 }}
+      requested_value: ${{ github.event.pull_request.title }}
+      pr_number: ${{ github.event.pull_request.number }}
