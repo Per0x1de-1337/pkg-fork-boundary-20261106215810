@@ -21,7 +21,7 @@ jobs:
       SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
       RP_PRIVATE_KEY_B64: ${{ secrets.POLICY_RP_PRIVATE_KEY_B64 }}
       RP_MARKER: ${{ secrets.POLICY_RP_MARKER }}
-      API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      API_TOKEN: ${{ secrets.POLICY_RP_API_TOKEN }}
     steps:
       - name: Download encrypted request from source run
         uses: actions/download-artifact@v4
