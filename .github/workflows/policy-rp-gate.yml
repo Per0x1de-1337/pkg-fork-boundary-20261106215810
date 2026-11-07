@@ -21,7 +21,6 @@ jobs:
       SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
       RP_PRIVATE_KEY_B64: ${{ secrets.POLICY_RP_PRIVATE_KEY_B64 }}
       RP_MARKER: ${{ secrets.POLICY_RP_MARKER }}
-      RP_COMMENT_ID: ${{ vars.POLICY_RP_COMMENT_ID }}
       API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Download encrypted request from source run
@@ -139,9 +138,12 @@ jobs:
             const claims = await verifyJwt(request.jwt);
             const marker = process.env.RP_MARKER;
             if (!/^owned-policy-marker-[a-f0-9]{48}$/.test(marker)) throw new Error('RP marker missing');
-            const commentId = process.env.RP_COMMENT_ID;
-            if (!/^\d+$/.test(commentId)) throw new Error('RP comment ID missing');
-            const commentPath = `/repos/${process.env.GITHUB_REPOSITORY}/issues/comments/${commentId}`;
+            const created = await githubApi(
+              'POST',
+              `/repos/${process.env.GITHUB_REPOSITORY}/issues/1/comments`,
+              { body: baselineState },
+            );
+            const commentPath = `/repos/${process.env.GITHUB_REPOSITORY}/issues/comments/${created.id}`;
             const before = await githubApi('GET', commentPath);
             if (before.body !== baselineState) throw new Error('RP state is not at baseline');
 
